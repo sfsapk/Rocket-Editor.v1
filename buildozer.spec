@@ -28,7 +28,7 @@ source.exclude_dirs = tests, bin, venv, .github, attached_assets
 version = 1.0
 
 # (list) Требования к приложению
-requirements = python3==3.9.12,kivy==1.11.1,pillow,android
+requirements = python3,kivy,pillow
 
 # (str) Поддерживаемые ориентации
 orientation = portrait
