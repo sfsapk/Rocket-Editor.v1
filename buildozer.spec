@@ -28,7 +28,7 @@ source.exclude_dirs = tests, bin, venv, .github, attached_assets
 version = 1.0
 
 # (list) Требования к приложению
-requirements = python3,kivy,pillow
+requirements = python3,kivy==2.0.0,pillow
 
 # (str) Поддерживаемые ориентации
 orientation = portrait
@@ -50,7 +50,7 @@ android.minapi = 21
 android.sdk = 25
 
 # (str) Android NDK версия для использования
-android.ndk = 25b
+android.ndk = 23b
 
 # (int) Android NDK API для использования
 android.ndk_api = 21
