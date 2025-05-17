@@ -16,7 +16,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 
 # (list) Директории для включения
-source.include_dirs = data
+source.include_dirs = data,rocket_data
 
 # (list) Исходные файлы для исключения
 source.exclude_exts = spec,md,yml,yaml
@@ -28,7 +28,7 @@ source.exclude_dirs = tests, bin, venv, .github, attached_assets
 version = 1.0
 
 # (list) Требования к приложению
-requirements = python3,kivy==2.0.0,pillow,android
+requirements = python3==3.9.12,kivy==1.11.1,pillow,android
 
 # (str) Поддерживаемые ориентации
 orientation = portrait
