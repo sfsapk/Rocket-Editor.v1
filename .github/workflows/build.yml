@@ -85,6 +85,12 @@ jobs:
             sudo rm -rf .buildozer
           fi
           
+          # Создаем необходимые папки для данных
+          mkdir -p data rocket_data
+          
+          # Установка дополнительных графических библиотек
+          sudo apt-get install -y libgl1-mesa-dev libmtdev-dev
+          
           # Запуск сборки APK с выводом отладочных сообщений
           buildozer -v android debug
         
