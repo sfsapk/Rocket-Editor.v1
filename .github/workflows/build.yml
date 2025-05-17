@@ -88,11 +88,20 @@ jobs:
           # Создаем необходимые папки для данных
           mkdir -p data rocket_data
           
-          # Установка дополнительных графических библиотек
+          # Установка дополнительных графических библиотек и зависимостей
           sudo apt-get install -y libgl1-mesa-dev libmtdev-dev
+          
+          # Добавим дополнительные зависимости для Python для Android
+          pip install cython==0.29.33 virtualenv
           
           # Запуск сборки APK с выводом отладочных сообщений
           buildozer -v android debug
+          
+          # В случае неудачи, покажем лог
+          if [ $? -ne 0 ]; then
+            echo "Ошибка сборки. Показываем последние 500 строк лога:"
+            tail -n 500 .buildozer/logs/buildozer.log
+          fi
         
       - name: Создание директории для релизов
         run: |
