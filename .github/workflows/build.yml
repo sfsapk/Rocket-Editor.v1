@@ -70,38 +70,44 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
             
-      - name: Установка buildozer и его зависимостей
+      - name: Установка дополнительных зависимостей для SDK и NDK
         run: |
+          # Установка JDK
+          sudo apt-get update
+          sudo apt-get install -y openjdk-8-jdk
+          
+          # Установка дополнительных библиотек и зависимостей
+          sudo apt-get install -y libtool automake autoconf unzip pkg-config
+          sudo apt-get install -y libgl1-mesa-dev libmtdev-dev
+          
+      - name: Установка buildozer и Cython
+        run: |
+          pip install --upgrade pip
           pip install --upgrade Cython==0.29.33 setuptools
-          pip install --upgrade buildozer
+          pip install --upgrade buildozer==1.5.0
           
-      - name: Запуск сборки APK
+      - name: Подготовка к сборке
         run: |
-          # Проверяем версию buildozer
-          buildozer --version
-          
-          # Удаляем существующую папку .buildozer если она существует
-          if [ -d ".buildozer" ]; then
-            sudo rm -rf .buildozer
-          fi
-          
           # Создаем необходимые папки для данных
           mkdir -p data rocket_data
           
-          # Установка дополнительных графических библиотек и зависимостей
-          sudo apt-get install -y libgl1-mesa-dev libmtdev-dev
+          # Очистка предыдущих сборок
+          rm -rf .buildozer || true
+          rm -rf bin || true
           
-          # Добавим дополнительные зависимости для Python для Android
-          pip install cython==0.29.33 virtualenv
+      - name: Запуск сборки APK
+        run: |
+          # Запуск сборки APK с максимальным уровнем логирования
+          export PYTHONIOENCODING=utf8
+          export LC_ALL=C.UTF-8
+          export LANG=C.UTF-8
+          buildozer android debug -v
           
-          # Запуск сборки APK с выводом отладочных сообщений
-          buildozer -v android debug
-          
-          # В случае неудачи, покажем лог
-          if [ $? -ne 0 ]; then
-            echo "Ошибка сборки. Показываем последние 500 строк лога:"
-            tail -n 500 .buildozer/logs/buildozer.log
-          fi
+      - name: Вывод логов в случае ошибки
+        if: ${{ failure() }}
+        run: |
+          echo "Ошибка сборки. Показываем последние 500 строк лога buildozer:"
+          tail -n 500 .buildozer/logs/buildozer.log || true
         
       - name: Создание директории для релизов
         run: |
