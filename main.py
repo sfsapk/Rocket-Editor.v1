@@ -507,7 +507,6 @@ class RocketPartsEditor(GridLayout):
         for i, part in enumerate(self.rocket_parts):
             # Создаём карточку для детали
             part_card = BoxLayout(orientation='vertical', size_hint_y=None, height=dp(180), padding=5)
-            part_card.border = [1, 1, 1, 1]
             
             # Верхняя строка с названием и кнопкой удаления
             header = BoxLayout(size_hint_y=None, height=dp(40))
@@ -637,7 +636,8 @@ class RocketEditorApp(App):
         self.title = "Редактор деталей ракеты"
         
         # Устанавливаем размер окна на настольных системах
-        if not IS_ANDROID:
+        # Только если мы не в среде GitHub Actions
+        if not IS_ANDROID and 'GITHUB_ACTIONS' not in os.environ:
             from kivy.core.window import Window
             Window.size = (480, 800)
         
@@ -645,5 +645,9 @@ class RocketEditorApp(App):
 
 # Запуск приложения
 if __name__ == "__main__":
-    app = RocketEditorApp()
-    app.run()
+    # Проверяем, находимся ли мы в GitHub Actions
+    if 'GITHUB_ACTIONS' in os.environ:
+        print("Запуск в GitHub Actions, пропускаем запуск приложения")
+    else:
+        app = RocketEditorApp()
+        app.run()
