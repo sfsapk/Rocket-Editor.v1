@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout кода
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Настройка Python 3.9
         uses: actions/setup-python@v4
@@ -97,7 +97,7 @@ jobs:
           cp bin/*.apk releases/
           
       - name: Загрузка APK как артефакт
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rocket-editor-apk
           path: bin/*.apk
