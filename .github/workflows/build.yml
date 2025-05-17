@@ -1,0 +1,108 @@
+name: Сборка APK
+
+# Запуск workflow при push-событии в ветку main и при создании pull request
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  # Возможность запуска workflow вручную из интерфейса GitHub
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Сборка APK с Buildozer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout кода
+        uses: actions/checkout@v3
+        
+      - name: Настройка Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          
+      - name: Настройка кэша для buildozer
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.buildozer
+            .buildozer
+          key: buildozer-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-
+            
+      - name: Установка системных зависимостей
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip \
+            build-essential \
+            git \
+            python3 \
+            python3-dev \
+            ffmpeg \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            zlib1g-dev
+            
+      - name: Установка дополнительных зависимостей для Android
+        run: |
+          sudo apt-get install -y \
+            libgstreamer1.0-dev \
+            gstreamer1.0-plugins-{bad,base,good,ugly} \
+            gstreamer1.0-{omx,alsa} \
+            libzbar-dev \
+            libtool \
+            autoconf \
+            cmake
+            
+      - name: Установка Java для Android SDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+            
+      - name: Установка buildozer и его зависимостей
+        run: |
+          pip install --upgrade Cython==0.29.33 setuptools
+          pip install --upgrade buildozer
+          
+      - name: Запуск сборки APK
+        run: |
+          # Проверяем версию buildozer
+          buildozer --version
+          
+          # Удаляем существующую папку .buildozer если она существует
+          if [ -d ".buildozer" ]; then
+            sudo rm -rf .buildozer
+          fi
+          
+          # Запуск сборки APK с выводом отладочных сообщений
+          buildozer -v android debug
+        
+      - name: Создание директории для релизов
+        run: |
+          mkdir -p releases
+          
+      - name: Копирование APK в директорию релизов
+        run: |
+          cp bin/*.apk releases/
+          
+      - name: Загрузка APK как артефакт
+        uses: actions/upload-artifact@v3
+        with:
+          name: rocket-editor-apk
+          path: bin/*.apk
+          
+      - name: Создание списка сборок
+        run: |
+          ls -la bin/
+          echo "Сборка завершена. APK файл сохранен как артефакт."
